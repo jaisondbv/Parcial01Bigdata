@@ -1,0 +1,38 @@
+from pymongo import MongoClient
+import requests
+
+
+client = MongoClient("mongodb+srv://nemeno3497:2569Ad46fUbzcInR@cluster0.rez7q.mongodb.net/")
+db = client["rick_morty_db"]
+collection = db["personajes"]
+
+
+pagina = 1
+all_characters = []
+
+
+while True:
+    response = requests.get(f"https://rickandmortyapi.com/api/character?page={pagina}")
+
+    if response.status_code == 200:
+        data = response.json()
+        characters = data["results"]  
+
+        
+        all_characters.extend(characters)
+
+        
+        if data["info"]["next"]:
+            pagina += 1
+        else:
+            break
+    else:
+        print(f"Error al obtener los datos en la página {pagina}: {response.status_code}")
+        break
+
+
+if all_characters:
+    collection.insert_many(all_characters)
+    print(f" Se insertaron {len(all_characters)} personajes en MongoDB.")
+else:
+    print("No se pudo insertar nada , no se encontraron datos dentro la api")
