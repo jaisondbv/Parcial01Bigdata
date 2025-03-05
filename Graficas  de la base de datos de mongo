@@ -1,0 +1,53 @@
+from pymongo import MongoClient
+import matplotlib.pyplot as plt
+from collections import Counter
+
+#Profesor estas son las librerias que debe instalar para que funcione
+# pip install pymongo matplotlib
+
+
+client = MongoClient("mongodb+srv://nemeno3497:2569Ad46fUbzcInR@cluster0.rez7q.mongodb.net/")
+db = client["rick_morty_db"]
+collection = db["personajes"]
+
+personajes = []
+episodios = []
+
+for personaje in collection.find():
+    personajes.append(personaje["name"])  
+    episodios.append(len(personaje["episode"]))  
+
+
+personajes, episodios = zip(*sorted(zip(personajes, episodios), key=lambda x: x[1], reverse=True))
+
+personajes = personajes[:50]
+episodios = episodios[:50]
+
+colores = [
+    "#FF5733", "#33FF57", "#3357FF", "#FF33A8", "#A833FF", 
+    "#33FFF5", "#F5FF33", "#FF8C33", "#8C33FF", "#33FF8C",
+    "#FF3333", "#33FFA8", "#A8FF33", "#FF33F5", "#5733FF",
+    "#F5A833", "#A8A8A8", "#3333FF", "#A8F533", "#FF5733",
+    "#F5A8A8", "#A8A8F5", "#FFA833", "#8CA833", "#A8F5A8",
+    "#FF33A8", "#FF8C8C", "#8C8CFF", "#FF8CA8", "#8CA8FF",
+    "#FF5733", "#33FF57", "#3357FF", "#FF33A8", "#A833FF", 
+    "#33FFF5", "#F5FF33", "#FF8C33", "#8C33FF", "#33FF8C",
+    "#FF3333", "#33FFA8", "#A8FF33", "#FF33F5", "#5733FF",
+    "#F5A833", "#A8A8A8", "#3333FF", "#A8F533", "#FF5733",
+    "#F5A8A8", "#A8A8F5", "#FFA833", "#8CA833", "#A8F5A8",
+    "#FF33A8", "#FF8C8C", "#8C8CFF", "#FF8CA8", "#8CA8FF"
+]
+
+
+
+# Crear la gráfica
+plt.figure(figsize=(15, 6))
+plt.bar(personajes, episodios, color=colores)
+plt.xlabel("Personaje")
+plt.ylabel("Número de Episodios")
+plt.title("Top de personajes que tienen mas apariciones en la serie rick & morty")
+plt.xticks(rotation=90, fontsize=5)  
+plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+
+plt.show()
